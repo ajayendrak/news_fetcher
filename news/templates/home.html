@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Search</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #keyword,
+        #category,
+        #from-date,
+        #to-date,
+        #sources,
+        #language {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #search-form button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #search-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .news-card {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .news-description {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .news-source {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .news-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .news-open-button {
+            display: block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .news-open-button:hover {
+            background-color: #0056b3;
+        }
+
+        #refresh-button {
+            position: fixed;
+            top: 90%; /* Places the button just below the search input */
+            left: 40%;
+            width: 20%; /* Makes it full width */
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #refresh-button:hover {
+            background-color: #0056b3;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #007BFF;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loading-spinner {
+            display: none;
+        }
+        #dashboard-button {
+            padding: 10px 20px;
+            background-color: #34A853; /* Change the background color */
+            color: #fff;
+            border: 1px solid #34A853; /* Add a border with the same color */
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        #dashboard-button:hover {
+            background-color: #228B22; /* Change the background color on hover */
+            border: 1px solid #228B22; /* Change the border color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="dashboard-button">Dashboard</button>
+        <h1>News Search</h1>
+        <div id="search-form">
+            <input type="text" id="keyword" placeholder="Keyword">
+            <input type="text" id="category" placeholder="Category" value="relevancy">
+            <input type="text" id="sources" placeholder="Sources eg. bbc-news,the-verge" value="">
+            <div>
+                <label for="from-date">From Date:</label><br/>
+                <input type="date" id="from-date" placeholder="2023-10-01" value="2023-10-11">
+            </div>
+            <div>
+                <label for="to-date">To Date:</label><br/>
+                <input type="date" id="to-date" placeholder="2023-10-11" value="2023-10-11">
+            </div>
+            <div>
+                <label for="language">Language:</label><br/>
+                <select id="language">
+                    <option value="en" selected>English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <!-- Add more language options as needed -->
+                </select>
+            </div>
+            <br/><button id="search-button">Search</button>
+        </div>
+        <button id="refresh-button">Refresh Results</button>
+        <div id="loading-spinner" class="loader"></div>
+        <div id="news-results"></div>
+    </div>
+
+    <script>
+        // JavaScript Code
+        const searchButton = document.getElementById('search-button');
+        const keywordInput = document.getElementById('keyword');
+        const categoryInput = document.getElementById('category');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
+        const languageInput = document.getElementById('language');
+        const sourcesInput = document.getElementById('sources');
+        const newsResults = document.getElementById('news-results');
+        const loadingSpinner = document.getElementById('loading-spinner');  
+
+        // Function to fetch news data
+        const fetchNews = (isRefresh) => {
+            const keyword = keywordInput.value.trim();
+            const category = categoryInput.value.trim();
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+            const language = languageInput.value.trim();
+            const sources = sourcesInput.value.trim();
+            if (keyword === '' && category === '' && date === '' && language === '') {
+                alert('Please enter search criteria.');
+                return;
+            }
+            // Get the access token from localStorage
+            const accessToken = localStorage.getItem('accessToken');
+            console.log(accessToken);
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${accessToken}`);
+            myHeaders.append("Content-Type", "application/json");
+
+
+            if (keyword === '') {
+                // Show a message to the user that the keyword is required.
+                alert('Keyword is compulsory. Please enter a keyword.');
+                return; // Do not proceed with the API call.
+            }
+            var data = {
+                "keyword": keyword,
+                "category": category,
+                "fromdate": fromDate,
+                "todate": toDate,
+                "language": language,
+                "sources" :sources
+            };
+            if (isRefresh) {
+                data["refresh"] = "refresh";
+            }
+            const raw = JSON.stringify(data);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow',
+            };
+            loadingSpinner.style.display = 'block';
+
+            // Make an API request to fetch news data
+            fetch('http://127.0.0.1:8000/news/fetch/', requestOptions)
+            .then((response) => {
+
+                loadingSpinner.style.display = 'none';
+
+                if (response.status === 403) {
+                    window.location.href = 'http://127.0.0.1:8000/login/';
+                    return;
+                }
+                if (response.status === 401) {
+                    window.location.href = 'http://127.0.0.1:8000/login/';
+                    return;
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                if (data.status === 'success') {
+                    displayNews(data.data.articles);
+                } else {
+                    console.log(data);
+                    alert(data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // alert('An error occurred while fetching news data.');
+            });
+        };
+
+        // Function to display news data
+        const displayNews = (articles) => {
+            newsResults.innerHTML = '';
+            articles.forEach((article) => {
+                const newsCard = document.createElement('div');
+                newsCard.classList.add('news-card');
+
+                const title = document.createElement('div');
+                title.classList.add('news-title');
+                title.textContent = article.title;
+
+                const description = document.createElement('div');
+                description.classList.add('news-description');
+                description.textContent = article.description;
+
+                const source = document.createElement('div');
+                source.classList.add('news-source');
+                source.textContent = `Source: ${article.source.name}`;
+
+                const image = document.createElement('img');
+                image.classList.add('news-image');
+                image.src = article.urlToImage;
+                image.alt = 'News Image';
+
+                const openButton = document.createElement('a');
+                openButton.classList.add('news-open-button');
+                openButton.href = article.url;
+                openButton.target = '_blank';
+                openButton.textContent = 'Read More';
+
+                newsCard.appendChild(title);
+                newsCard.appendChild(description);
+                newsCard.appendChild(source);
+                newsCard.appendChild(image);
+                newsCard.appendChild(openButton);
+
+                newsResults.appendChild(newsCard);
+            });
+        };
+
+        // // Event listeners
+        // searchButton.addEventListener('click', fetchNews);
+        // keywordInput.addEventListener('keydown', (event) => {
+        //     if (event.key === 'Enter') {
+        //         fetchNews();
+        //     }
+        // });
+        searchButton.addEventListener('click', () => fetchNews(false)); // Not a refresh
+        keywordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                fetchNews(false); // Not a refresh
+            }
+        });
+
+        // Add event listener to the refresh button
+        const refreshButton = document.getElementById('refresh-button');
+        refreshButton.addEventListener('click', () => {
+            fetchNews(true); // This is a refresh
+        });
+
+        const dashboardButton = document.getElementById('dashboard-button');
+        dashboardButton.addEventListener('click', () => {
+            // Redirect to the dashboard URL
+            window.location.href = 'http://127.0.0.1:8000/dashboard';
+        });
+    </script>
+</body>
+</html>
