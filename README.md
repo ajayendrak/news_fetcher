@@ -42,7 +42,6 @@ News Aggregator is a web application that allows users to fetch and view news ar
 
    ```env
    DEBUG=True
-   SECRET_KEY=your-secret-key
    NEWS_API_KEY=your-newsapi-key
 
 
