@@ -1,4 +1,4 @@
-# News Aggregator Web App
+# News Fetcher Web App
 
 News Aggregator is a web application that allows users to fetch and view news articles from various sources. It offers a user-friendly interface for searching news articles based on keywords, sources, categories, date range, and language.
 
@@ -24,9 +24,9 @@ News Aggregator is a web application that allows users to fetch and view news ar
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/yourusername/news-aggregator.git`
+1. Clone the repository: `git clone https://github.com/ajayendrak/newsweb.git`
 
-2. Change directory to the project folder: `cd news-aggregator`
+2. Change directory to the project folder: `cd newsweb`
 
 3. Create a virtual environment (optional but recommended): `python -m venv venv`
 
@@ -36,7 +36,7 @@ News Aggregator is a web application that allows users to fetch and view news ar
 
 5. Install project dependencies: `pip install -r requirements.txt`
 
-6. Create a `.env` file in the project directory and add your environment variables, including your NewsAPI key and Django secret key.
+6. Create a `.env` file in the project directory and add your environment variables, including your NewsAPI key.
 
    Example `.env` file:
 
