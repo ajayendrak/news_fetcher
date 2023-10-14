@@ -84,7 +84,7 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Perform your AJAX request to the login API endpoint here
+            // Perform AJAX request to the login API endpoint here
             // For example, using fetch():
             fetch('http://127.0.0.1:8000/user/login/', {
                 method: 'POST',
@@ -98,12 +98,16 @@
             })
             .then(response => response.json())
             .then(data => {
+                if (data.status === 'blocked') {
+                    window.location.href = 'http://127.0.0.1:8000/blocked/';
+                    return;
+                }
                 if (data.status === 'success') {
                     // Save the access token to local storage
                     localStorage.setItem('accessToken', data.access);
 
                     // Redirect to the desired page (e.g., dashboard)
-                    window.location.href = 'http://127.0.0.1:8000/home'; // Replace with your dashboard URL
+                    window.location.href = 'http://127.0.0.1:8000/'; // Replace with your dashboard URL
                 } else {
                     // Display an error message
                     errorMessage.style.display = 'block';

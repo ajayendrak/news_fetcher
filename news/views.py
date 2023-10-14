@@ -27,6 +27,13 @@ class FetchNewsView(APIView):
 
     def post(self,request):
         try:
+            user=request.user
+            if user.is_blocked:
+                return Response({
+                            "status":"blocked",
+                            'message':"user is blocked",
+                            'data' : {},
+                        },status=status.HTTP_200_OK)
             keyword=request.data.get("keyword")
             sources=request.data.get("sources")
             from_date=request.data.get("fromdate")
@@ -36,7 +43,7 @@ class FetchNewsView(APIView):
             today = datetime.today()
             refresh = request.data.get("refresh")
             print("----------22-------", refresh)
-            user=request.user
+            
             one_day_ago = today - timedelta(days=2)
             formatted_date = one_day_ago.strftime("%Y-%d-%m")
             print(request.data)
@@ -78,6 +85,7 @@ class FetchNewsView(APIView):
             except requests.exceptions.RequestException as e:
                 print(e)
                 return Response({'status':"fail", 'data':[], 'message':"Something went wrong please try again later"},status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         except Exception as e:
             print(e)
             return Response({'status':"fail", 'data':[], 'message':"Something went wrong please try again later"},status.HTTP_500_INTERNAL_SERVER_ERROR)

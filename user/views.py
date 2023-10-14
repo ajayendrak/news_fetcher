@@ -15,6 +15,8 @@ def signup_view(request):
 def login_view(request):
     return render(request, 'login.html')
 
+def blocked_view(request):
+    return render(request, 'blocked.html')
 
 class UserSignUPView(APIView):
 	permission_classes = []
@@ -51,6 +53,8 @@ class UserLoginView(APIView):
 				user = authenticate(email=email,password=password)
 				
 				if user is not None:
+					if user.is_blocked:
+						return Response({'status':"blocked", 'data':[], 'message':"User is blocked"},status.HTTP_200_OK)
 					refresh = RefreshToken.for_user(user)
 					user.extension_refresh=False
 					user.save()

@@ -20,7 +20,7 @@ class User(AbstractBaseUser,PermissionsMixin):
 				raise ValidationError("Email entered is Incorrect.")
 		raise ValidationError("Email is Incorrect")
 	
-	username = models.CharField(max_length=100)
+	is_blocked = models.BooleanField(default=False)
 	email = models.EmailField(unique=True,validators=[validateEmail])
 	first_name = models.CharField(max_length=255,blank=True,null=True)
 	last_name = models.CharField(max_length=255,blank=True,null=True)

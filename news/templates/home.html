@@ -109,9 +109,9 @@
 
         #refresh-button {
             position: fixed;
-            top: 90%; /* Places the button just below the search input */
+            top: 90%; 
             left: 40%;
-            width: 20%; /* Makes it full width */
+            width: 20%; 
             padding: 10px 20px;
             background-color: #007BFF;
             color: #fff;
@@ -143,9 +143,9 @@
         }
         #dashboard-button {
             padding: 10px 20px;
-            background-color: #34A853; /* Change the background color */
+            background-color: #34A853;
             color: #fff;
-            border: 1px solid #34A853; /* Add a border with the same color */
+            border: 1px solid #34A853;
             border-radius: 3px;
             font-size: 16px;
             cursor: pointer;
@@ -154,8 +154,8 @@
         }
 
         #dashboard-button:hover {
-            background-color: #228B22; /* Change the background color on hover */
-            border: 1px solid #228B22; /* Change the border color on hover */
+            background-color: #228B22; 
+            border: 1px solid #228B22; 
         }
     </style>
 </head>
@@ -267,7 +267,12 @@
             })
             .then((data) => {
                 console.log(data);
+                if (data.status === 'blocked') {
+                    window.location.href = 'http://127.0.0.1:8000/blocked/';
+                    return;
+                }
                 if (data.status === 'success') {
+
                     displayNews(data.data.articles);
                 } else {
                     console.log(data);
@@ -320,13 +325,6 @@
             });
         };
 
-        // // Event listeners
-        // searchButton.addEventListener('click', fetchNews);
-        // keywordInput.addEventListener('keydown', (event) => {
-        //     if (event.key === 'Enter') {
-        //         fetchNews();
-        //     }
-        // });
         searchButton.addEventListener('click', () => fetchNews(false)); // Not a refresh
         keywordInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
