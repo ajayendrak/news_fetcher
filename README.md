@@ -1,6 +1,6 @@
 # News Fetcher Web App
 
-News Aggregator is a web application that allows users to fetch and view news articles from various sources. It offers a user-friendly interface for searching news articles based on keywords, sources, categories, date range, and language.
+News Fetcher is a web application that allows users to fetch and view news articles from various sources. It offers a user-friendly interface for searching news articles based on keywords, sources, categories, date range, and language.
 
 ## Features
 
